@@ -51,7 +51,7 @@ Import-Module Profile
 set-alias unset      remove-variable
 set-alias mo         measure-object
 set-alias eval       invoke-expression
-set-alias n          vim.exe
+set-alias n          'C:\Program Files (x86)\Notepad++\notepad++.exe'
 set-alias vi         vim.exe
 
 # ---------------------------------------------------------------------------
