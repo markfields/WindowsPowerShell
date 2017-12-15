@@ -57,7 +57,7 @@ set-alias vi         vim.exe
 # ---------------------------------------------------------------------------
 # Visuals
 # ---------------------------------------------------------------------------
-set-variable -Scope Global WindowTitle ''
+#set-variable -Scope Global WindowTitle ''
 
 function prompt
 {
@@ -80,7 +80,6 @@ function prompt
 	$local:title = $path
 	if($WindowTitle) { $title += " - $WindowTitle" }
 
-	$host.ui.rawUi.windowTitle = $title
 	$path = [IO.Path]::GetFileName($path)
 	if(!$path) { $path = '\' }
 
@@ -105,6 +104,8 @@ function prompt
 		$global:LASTEXITCODE = $realLASTEXITCODE
 	}
 
+	$host.ui.rawUi.windowTitle = $title
+	
 	return ">";
 }
 
