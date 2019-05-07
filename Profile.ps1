@@ -59,6 +59,26 @@ set-alias vi         vim.exe
 # ---------------------------------------------------------------------------
 #set-variable -Scope Global WindowTitle ''
 
+function ShouldRepoBeExcludedForGitStatus
+{
+	# Personal preference: ignore any directory under %INETROOT%, as these are VERY large Git repos
+	$local:inetRoot = $null
+	if (Test-Path env:\INETROOT)
+	{
+		$local:inetRoot = $(get-content env:\INETROOT)
+	}
+	
+	if ($local:inetRoot)
+	{
+		$local:inetRoot = $local:inetRoot.ToLower()
+		$local:currentDir = (get-location).Path.ToLower()
+		
+		return $local:currentDir.StartsWith($local:inetRoot)
+	}
+	
+	return $false
+}
+
 function prompt
 {
 	$local:pathObj = (get-location)
@@ -90,8 +110,8 @@ function prompt
 	
 	$private:h = @(Get-History);
 	$private:nextCommand = $private:h[$private:h.Count - 1].Id + 1;
-	Write-Host -NoNewline -ForeGroundColor Red "${private:nextCommand}|";	 
-	
+	Write-Host -NoNewline -ForeGroundColor Red "${private:nextCommand}|";
+
 	Write-Host -NoNewline -ForeGroundColor Blue "${drive}";
 	Write-Host -NoNewline -ForeGroundColor White ":";
 	Write-Host -NoNewline -ForeGroundColor White "$path";
@@ -99,9 +119,12 @@ function prompt
 	# Show GIT Status, if loaded:
 	if (Get-Command "Write-VcsStatus" -ErrorAction SilentlyContinue)
 	{
-		$realLASTEXITCODE = $LASTEXITCODE
-		Write-VcsStatus
-		$global:LASTEXITCODE = $realLASTEXITCODE
+		if (!(ShouldRepoBeExcludedForGitStatus))
+		{
+			$realLASTEXITCODE = $LASTEXITCODE
+			Write-VcsStatus
+			$global:LASTEXITCODE = $realLASTEXITCODE
+		}
 	}
 
 	$host.ui.rawUi.windowTitle = $title
